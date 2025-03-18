@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Window Creation C++</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="favicon.webp" type="image/x-webp">
+  </head>
+  <body>
+    <h1>Make Window Program in C++ Using Windows API</h1>
+    <hr />
+    <ol>
+      <li><a href="#IncludeApi">Including Api</a></li>
+      <li><a href="#MakingMain">Making main entry</a></li>
+      <li><a href="#CreatingClass">Create Class And Register</a></li>
+      <li><a href="#CreatingWindow">Creating Window and Showing it</a></li>
+      <li><a href="#MessageLoops">Create Message Loops</a></li>
+      <li><a href="#WindowProc">Window Procedure</a></li>
+      <li><a href="#compile">Compile And Run</a></li>
+    </ol>
+<div class="main">
+    <div id="IncludeApi">
+      <h2>Including Windows API</h2>
+      <p>
+        First step to create our program is to include our header files. In c++
+        they are recognized by the <u><b>.h extencion</b></u
+        >.
+      </p>
+      <ul>
+        <li>
+          <span
+            >In C++ we include files by typing
+            <code>    <span class="preprocessor">#include</span> <span class="string">&lt;filename.h&gt;</span> <span class="comment">//Including header file to our project</span></code>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          so we include iostream (for Debugging*) and Windows.h (Windows API)
+        </li>
+      </ul>
+      <code>
+    <span class="preprocessor">#include</span> <span class="string">&lt;Windows.h&gt;</span>
+    <span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+      </code>
+    </div>
+
+    <div id="MakingMain">
+        <h2>Making Main Entry To out program</h2>
+        <p>This is going to tell our compiler where the start of our program is</p>
+        <ul>
+            <li><span>Normaly in C++ we create the main entry using <code><span class="keyword">int</span> <span class="function">main</span>()</code></li>
+            <li><b><u>BUT</u></b> because we are using the windows API we need to make WINMAIN entry<code><span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">wWinMain</span>(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, <span class="keyword">int</span> nCmdShow)</code></li>
+        </ul>
+        <code>
+    <span class="preprocessor">#include</span> <span class="string">&lt;Windows.h&gt;</span>
+    <span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+    <span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">wWinMain</span>(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, <span class="keyword">int</span> nCmdShow);
+    <span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">WinMain</span>(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, <span class="keyword">int</span> nCmdShow)
+    {
+        <span class="keyword">return</span> 0;
+    }
+        </code>
+    </div>
+
+    <div id="CreatingClass">
+        <h2>Creating Class For Our Window</h2>
+        <p>A window class defines a set of behaviors that several windows might have in common.</p>
+        <ul>
+            <li><span>We create our class using <code><span class="keyword">const wchar_t</span> CLASS_NAME[] = <span class="string">L"Your WIndow Class Name"</span>;</code></span></li>
+            <li><span>Then we use <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassa" target="_blank" rel="WindClass Microshoft">WINDCLASS</a> to set and register our class <code><span><span class="datatype">WINDCLASS</span> wc = {};</span>
+            
+wc.lpfnWndProc   = WindowProc;
+wc.hInstance     = hInstance;
+wc.lpszClassName = CLASS_NAME;</code></span></li>
+            <li><span>Lastly we register our class using <code><span><span class="function">RegisterClass</span>(&wc);</span></code></span></li>
+        </ul>
+        <code>
+            <span class="preprocessor">#include</span> <span class="string">&lt;Windows.h&gt;</span>
+            <span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+            
+            <span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">WinMain</span>(<span class="datatype">HINSTANCE</span> hInstance, <span class="datatype">HINSTANCE</span> hPrevInstance, <span class="datatype">PSTR</span> lpCmdLine, <span class="keyword">int</span> nCmdShow)
+            {
+                <span class="keyword">const wchar_t</span> CLASS_NAME[] = <span class="string">L"Window Class Name"</span><span>;</span>
+                <span><span class="datatype">WINDCLASS</span> wc = {};</span>
+                    
+                wc.lpfnWndProc   = WindowProc;
+                wc.hInstance     = hInstance;
+                wc.lpszClassName = CLASS_NAME;
+        
+                <span><span class="function">RegisterClass</span>(&wc);</span>
+                <span class="keyword">return</span> 0;  
+            }
+    </code>
+    </div>
+    <div id="CreatingWindow">
+        <h2>Creating And Showing Window</h2>
+        <p>To Create A window we need to use <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexa">CreateWindowEx</a> which is going to do the work for us</p>
+        <ul>
+            <li><span>To create a Window we use <code><span><span class="datatype">HWND</span> hwnd = <span class="function">CreateWindowEx</span>(
+    0,                  <span class="comment">//optional styles (we don't want so 0)</span>
+    CLASS_NAME,         <span class="comment">//Window Class Name</span>
+    <span class="string">L"Title"</span>,           <span class="comment">//Window Title</span>
+    WS_OVERLAPPEDWINDOW,<span class="comment">//Window Styles for more click <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexa#parameters">here</a></span>
+    
+    <span class="comment">//size and position of our window</span>
+    CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, <span class="comment">//To have user set it</span>
+    
+    <span class="keyword">NULL</span>,               <span class="comment">//Parent Window (NULL since this is the only window)</span>
+    <span class="keyword">NULL</span>,               <span class="comment">//Menu (If you want visit <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexa#parameters">here</a></span>
+    hInstance,          <span class="comment">//Instance Handler</span>
+    <span class="keyword">NULL</span>                <span class="comment">//some adittional application data click <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexa#parameters">here</a> to view</span>
+    );
+</span></code></span></li>
+<li><span>Then we need to check if window was created. We manage that by checking if our <b>hwnd</b> is <b><u>NULL</u></b><code><span class="keyword">if</span> (hwnd == <span class="keyword">NULL</span>)
+{
+    <span class="keyword">return</span> 0;    
+}
+</code></span></li>
+<li>Lastly we need to show the window</li>
+<code><span><span class="function">ShowWindow</span>(hwnd, nCmdShow);</span></code>
+        </ul>
+        <code>
+            <span class="preprocessor">#include</span> <span class="string">&lt;Windows.h&gt;</span>
+            <span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+            
+            <span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">WinMain</span>(<span class="datatype">HINSTANCE</span> hInstance, <span class="datatype">HINSTANCE</span> hPrevInstance, <span class="datatype">PSTR</span> lpCmdLine, <span class="keyword">int</span> nCmdShow)
+            {
+                <span class="keyword">const wchar_t</span> CLASS_NAME[] = <span class="string">L"Window Class Name"</span><span>;</span>
+                <span><span class="datatype">WINDCLASS</span> wc = {};</span>
+                    
+                wc.lpfnWndProc   = WindowProc;
+                wc.hInstance     = hInstance;
+                wc.lpszClassName = CLASS_NAME;
+        
+                <span><span class="function">RegisterClass</span>(&wc);</span>
+                <span class="keyword">return</span> 0;  
+            }
+            <span><span class="datatype">HWND</span> hwnd = <span class="function">CreateWindowEx</span>(
+                0,                  
+                <span class="string">L"Hello World"</span>,           
+                WS_OVERLAPPEDWINDOW,
+                
+                
+                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+                
+                <span class="keyword">NULL</span>,              
+                <span class="keyword">NULL</span>,               
+                hInstance,         
+                <span class="keyword">NULL</span>              
+                );
+        
+                <span class="keyword">if</span> (hwnd == <span class="keyword">NULL</span>)
+                {
+                    <span class="keyword">return</span> 0;    
+                }
+        
+                <span class="function">ShowWindow</span>(hwnd, nCmdShow);
+    </span>
+            </code>
+    </div>
+    <div id="MessageLoops">
+        <h2>Creating Message Loops</h2>
+        <p>Our application uses messages to interact with both the OS and the HardWare. With Messages we tell our app what to do when an event happends. For excample if user clicks exit button, we need to tell our app to exit.</p>
+        <ul>
+            <li><span>So to do this we need to initialize <b><u>MSG</u></b> <code><span><span class="datatype">MSG</span> msg = {}; <span class="comment">//initializing MSG</span></span></code></span></li>
+            <li><span>Now we need to create a loop so the app checks constantly for events caused by the user or the OS <code><span><span class="keyword">while</span>(<span class="function">GetMessage</span>(&msg, <span class="keyword">NULL</span>, 0, 0) > 0)         <span class="comment">//Checks every frame for messages</span>
+{
+    <span class="function">TranslateMessage</span>(&msg);                     <span class="comment">//Translates Message</span>
+    <span class="function">DispatchMessage</span>(&msg);                      <span class="comment">//DIspatches Message</span>
+}</span></code></span></li>
+        </ul>
+        <code>
+            <span class="preprocessor">#include</span> <span class="string">&lt;Windows.h&gt;</span>
+            <span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+
+            <span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">WinMain</span>(<span class="datatype">HINSTANCE</span> hInstance, <span class="datatype">HINSTANCE</span> hPrevInstance, <span class="datatype">PSTR</span> lpCmdLine, <span class="keyword">int</span> nCmdShow)
+            {
+                <span class="keyword">const wchar_t</span> CLASS_NAME[] = <span class="string">L"Window Class Name"</span><span>;</span>
+                <span><span class="datatype">WINDCLASS</span> wc = {};</span>
+                    
+                wc.lpfnWndProc   = WindowProc;
+                wc.hInstance     = hInstance;
+                wc.lpszClassName = CLASS_NAME;
+        
+                <span><span class="function">RegisterClass</span>(&wc);</span>
+                <span class="keyword">return</span> 0;  
+            }
+            <span><span class="datatype">HWND</span> hwnd = <span class="function">CreateWindowEx</span>(
+                0,                  
+                <span class="string">L"Hello World"</span>,           
+                WS_OVERLAPPEDWINDOW,
+                
+                
+                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+                
+                <span class="keyword">NULL</span>,              
+                <span class="keyword">NULL</span>,               
+                hInstance,         
+                <span class="keyword">NULL</span>              
+                );
+        
+                <span class="keyword">if</span> (hwnd == <span class="keyword">NULL</span>)
+                {
+                    <span class="keyword">return</span> 0;    
+                }
+        
+                <span class="function">ShowWindow</span>(hwnd, nCmdShow);
+            </span>
+
+            <span class="datatype">MSG</span> msg = {};
+            <span class="keyword">while</span>(<span class="function">GetMessage</span>(&msg, <span class="keyword">NULL</span>, 0, 0) > 0)
+            {
+                <span class="function">TranslateMessage</span>(&msg);                  
+                <span class="function">DispatchMessage</span>(&msg); 
+            }
+                    </code>
+    </div>
+    <div id="WindowProc">
+        <h2>Creating The Windows Procedure</h2>
+        <p>Windows Procedure is the function that is being called from the <b><u>DispatchMessage</u></b> function and is the one in charge of acknowledging the message and then do the action nedeed for that event.</p>
+
+        <ul>
+            <li><span>We write the procedure at the top of our code as is: <code><span>LRESULT CALLBACK <span class="title">WindowProc</span>(<span class="datatype">HWND</span> hwnd, <span class="datatype">UINT</span> uMsg, <span class="datatype">WPARAM</span> wParam, <span class="datatype">LPARAM</span> lParam);</span></code></span></li>
+            <li><span>Then we can add a <b>switch</b> that is about uMsg (I will add some usefull ones) <code><span><span class="keyword">switch</span>(uMsg)
+        {
+            {
+            <span class="keyword">case</span> WM_DESTROY:             <span class="comment">//event for user exiting window</span>
+                <span class="function">PostQuitMessage</span>(0);
+                <span class="keyword">return</span> 0;
+            <span class="keyword">case</span> WM_PAINT:               <span class="comment">//event for painting</span>
+                <span class="datatype">PAINTSTRUCT</span> ps;
+
+                <span class="datatype">HDC</span> hdc = <span class="function">BeginPaint</span>(hWnd, &ps);
+
+                <span class="comment">// Get full screen size</span>
+                <span class="datatype">RECT</span> fullScreenRect;
+                <span class="function">xGetClientRect</span>(hWnd, &fullScreenRect);
+
+                <span class="comment">// Fill the rectangle with a color</span>
+                <span class="datatype">HBRUSH</span> hBrush = <span class="function">CreateSolidBrush</span>(<span class="datatype">RGB</span>(255, 255, 255)); <span class="comment">// Red color</span>
+                <span class="function">FillRect</span>(hdc, &fullScreenRect, hBrush);
+
+                <span class="function">DeleteObject</span>(hBrush);
+                <span class="function">EndPaint</span>(hWnd, &ps);
+            <span class="keyword">case</span> WM_SIZE:
+            <span class="keyword">case</span> WM_MOVE:
+                <span class="function">InvalidRect</span>(hwnd, <span class="keyword">NULL</span>, <span class="keyword">true</span>);          <span class="comment">//fixing rect if window moves</span>
+                <span class="function">UpdateWindow</span>(hwnd);
+                <span class="keyword">break</span>;
+            <span class="keyword">default</span>:
+                <span class="keyword">return</span> <span class="function">DefWindowProc</span>(hwnd, uMsg, wParam, lParam);
+        }</span></code></span></li>
+        </ul>
+        <code>
+            <span class="preprocessor">#include</span> <span class="string">&lt;Windows.h&gt;</span>
+            <span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+            
+            <span>LRESULT CALLBACK <span class="title">WindowProc</span>(<span class="datatype">HWND</span> hwnd, <span class="datatype">UINT</span> uMsg, <span class="datatype">WPARAM</span> wParam, <span class="datatype">LPARAM</span> lParam)
+            {
+                <span><span class="keyword">switch</span>(uMsg)
+                {
+                    <span class="keyword">case</span> WM_DESTROY:             <span class="comment">//event for user exiting window</span>
+                        <span class="function">PostQuitMessage</span>(0);
+                        <span class="keyword">return</span> 0;
+                    <span class="keyword">case</span> WM_PAINT:               <span class="comment">//event for painting</span>
+                        <span class="datatype">PAINTSTRUCT</span> ps;
+
+                        <span class="datatype">HDC</span> hdc = <span class="function">BeginPaint</span>(hWnd, &ps);
+
+                        <span class="comment">// Get full screen size</span>
+                        <span class="datatype">RECT</span> fullScreenRect;
+                        <span class="function">xGetClientRect</span>(hWnd, &fullScreenRect);
+
+                        <span class="comment">// Fill the rectangle with a color</span>
+                        <span class="datatype">HBRUSH</span> hBrush = <span class="function">CreateSolidBrush</span>(<span class="datatype">RGB</span>(255, 255, 255)); <span class="comment">// Red color</span>
+                        <span class="function">FillRect</span>(hdc, &fullScreenRect, hBrush);
+
+                        <span class="function">DeleteObject</span>(hBrush);
+                        <span class="function">EndPaint</span>(hWnd, &ps);
+                    <span class="keyword">case</span> WM_SIZE:
+                    <span class="keyword">case</span> WM_MOVE:
+                        <span class="function">InvalidRect</span>(hwnd, <span class="keyword">NULL</span>, <span class="keyword">true</span>);          <span class="comment">//fixing rect if window moves</span>
+                        <span class="function">UpdateWindow</span>(hwnd);
+                        <span class="keyword">break</span>;
+                    <span class="keyword">default</span>:
+                        <span class="keyword">return</span> <span class="function">DefWindowProc</span>(hwnd, uMsg, wParam, lParam);
+                }
+            }</span>
+                
+            <span class="keyword">int</span> <span class="function">WINAPI</span> <span class="title">WinMain</span>(<span class="datatype">HINSTANCE</span> hInstance, <span class="datatype">HINSTANCE</span> hPrevInstance, <span class="datatype">PSTR</span> lpCmdLine, <span class="keyword">int</span> nCmdShow)
+            {
+                <span class="keyword">const wchar_t</span> CLASS_NAME[] = <span class="string">L"Window Class Name"</span><span>;</span>
+                <span><span class="datatype">WINDCLASS</span> wc = {};</span>
+                    
+                wc.lpfnWndProc   = WindowProc;
+                wc.hInstance     = hInstance;
+                wc.lpszClassName = CLASS_NAME;
+        
+                <span><span class="function">RegisterClass</span>(&wc);</span>
+                <span class="keyword">return</span> 0;  
+            }
+            <span><span class="datatype">HWND</span> hwnd = <span class="function">CreateWindowEx</span>(
+                0,                  
+                <span class="string">L"Hello World"</span>,           
+                WS_OVERLAPPEDWINDOW,
+                
+                
+                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+                
+                <span class="keyword">NULL</span>,              
+                <span class="keyword">NULL</span>,               
+                hInstance,         
+                <span class="keyword">NULL</span>              
+                );
+        
+                <span class="keyword">if</span> (hwnd == <span class="keyword">NULL</span>)
+                {
+                    <span class="keyword">return</span> 0;    
+                }
+        
+                <span class="function">ShowWindow</span>(hwnd, nCmdShow);
+            </span>
+
+            <span class="datatype">MSG</span> msg = {};
+            <span class="keyword">while</span>(<span class="function">GetMessage</span>(&msg, <span class="keyword">NULL</span>, 0, 0) > 0)
+            {
+                <span class="function">TranslateMessage</span>(&msg);                  
+                <span class="function">DispatchMessage</span>(&msg); 
+            }
+                    </code>
+    </div>
+    <div id="compile">
+        <h2>Compile And Run</h2>
+        <p>Now we are going to make the c++ file into a excecutable.</p>
+        <ul>
+            <li><span>Firstly we need to install Visual Studio from <a href="https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false">here</a></span></li>
+            <li><span>Then We are going to install desktop development with c++</span></li>
+            <li><span>Then We create an empty project with c++ for desktop and we drag and drop our file called main.cpp</span></li>
+            <li><span>Lastly we hit <img id="f5" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-GmFqxIMNi29SvV3zirSoOEAp6ZFbmkPdNg&s" alt="f5 key"> and the project will compile and run!</span></li>
+        </ul>
+        <h4>installing desktop c++ dev tools excample </h4>
+        <a href="https://learn.microsoft.com/en-us/cpp/build/media/vscpp-concierge-choose-workload.gif?view=msvc-170"><img src="https://learn.microsoft.com/en-us/cpp/build/media/vscpp-concierge-choose-workload.gif?view=msvc-170" alt="visualstudio c++ dev tools download excample"></a>
+    </div>
+</div>
+
+<h5>Mamais Kyriakos A'3</h5>
+  </body>
+</html>
