@@ -18,6 +18,7 @@
       <li><a href="#MessageLoops">Create Message Loops</a></li>
       <li><a href="#WindowProc">Window Procedure</a></li>
       <li><a href="#compile">Compile And Run</a></li>
+      <li><a href="#cppDefTable">Table Explaing Code</a></li>
     </ol>
 <div class="main">
     <div id="IncludeApi">
@@ -68,7 +69,7 @@
         <p>A window class defines a set of behaviors that several windows might have in common.</p>
         <ul>
             <li><span>We create our class using <code><span class="keyword">const wchar_t</span> CLASS_NAME[] = <span class="string">L"Your WIndow Class Name"</span>;</code></span></li>
-            <li><span>Then we use <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassa" target="_blank" rel="WindClass Microshoft">WINDCLASS</a> to set and register our class <code><span><span class="datatype">WINDCLASS</span> wc = {};</span>
+            <li><span>Then we use <a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassa" target="_blank" rel="noopener">WINDCLASS</a> to set and register our class <code><span><span class="datatype">WINDCLASS</span> wc = {};</span>
             
 wc.lpfnWndProc   = WindowProc;
 wc.hInstance     = hInstance;
@@ -344,6 +345,45 @@ wc.lpszClassName = CLASS_NAME;</code></span></li>
     </div>
 </div>
 
-<h5>Mamais Kyriakos A'3</h5>
+<div id="cppDefTable">
+    <h2>Table Explaing Code</h2>
+    <table>
+        <table>
+            <tr>
+                <th>Function</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>WindowProc</td>
+                <td>Handles window messages such as WM_DESTROY, WM_PAINT, WM_SIZE, and WM_MOVE.</td>
+            </tr>
+            <tr>
+                <td>WinMain</td>
+                <td>Main entry point for a Windows application. Registers the window class and creates the window.</td>
+            </tr>
+            <tr>
+                <td>CreateWindowEx</td>
+                <td>Creates the application window with specified styles and properties.</td>
+            </tr>
+            <tr>
+                <td>ShowWindow</td>
+                <td>Displays the window with the specified show state.</td>
+            </tr>
+            <tr>
+                <td>GetMessage</td>
+                <td>Retrieves messages from the message queue and processes them in a loop.</td>
+            </tr>
+            <tr>
+                <td>TranslateMessage</td>
+                <td>Translates virtual-key messages into character messages.</td>
+            </tr>
+            <tr>
+                <td>DispatchMessage</td>
+                <td>Dispatches messages to the window procedure for handling.</td>
+            </tr>
+    </table>
+</div>
+
+<h5>Mamais Kyriakos A'3 <a href="https://github.com/user5012/SchoolProjectCppWIndow" target="_blank" rel="noopener">source code</a></h5>
   </body>
 </html>
